@@ -171,6 +171,7 @@ class Anchorhead_Public {
 	public function find_headings( $content ) {
 
 		if ( empty( $content ) ) { return $content; }
+		if ( ! in_the_loop() ) { return $content; }
 
 		$dom 	= new DOMDocument();
 		$h2arr 	= array();
@@ -199,6 +200,8 @@ class Anchorhead_Public {
 			$this->headings[$pageID]['h2'][] = $h2_args;
 
 		} // foreach
+
+		unset( $dom );
 
 		return $content;
 
