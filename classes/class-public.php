@@ -117,7 +117,7 @@ class Anchorhead_Public {
 
 			$content_array 		= explode( $heading['text'] . '</h2>', $content );
 			$therest 			= end( $content_array );
-			$content 			= $content_array[0] . $heading['text'] . '<span id="' . $heading['anchortext'] . '"></span><a class="ah-top" data-scroll href="#">Back to top</a></h2>' . $therest;
+			$content 			= $content_array[0] . $heading['text'] . '<span id="' . $heading['anchortext'] . '"></span><a class="ah-top" data-scroll href="#" role="link">Back to top</a></h2>' . $therest;
 			unset( $therest );
 
 		} // foreach
@@ -169,6 +169,8 @@ class Anchorhead_Public {
 	 * @return 	mixed 		$content 		The current content
 	 */
 	public function find_headings( $content ) {
+
+		wp_die( print_r( $content ) );
 
 		if ( empty( $content ) ) { return $content; }
 		if ( ! in_the_loop() ) { return $content; }
@@ -224,7 +226,7 @@ class Anchorhead_Public {
 
 		?><script>smoothScroll.init({
 			easing: '<?php echo esc_html( $this->options['scroll-type'] ); ?>',
-			speed:<?php echo esc_html( $this->options['scroll-speed'] ); ?>
+			speed: '<?php echo esc_html( $this->options['scroll-speed'] ); ?>'
 		});</script><?php
 
 	} // start_smooth_scroll()
