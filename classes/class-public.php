@@ -93,7 +93,7 @@ class Anchorhead_Public {
 	 */
 	public function enqueue_scripts() {
 
-		wp_enqueue_script( $this->plugin_name . 'smooth-scroll', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/js/smooth-scroll.min.js', array(), $this->version, false );
+		wp_enqueue_script( $this->plugin_name . 'smooth-scroll', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/js/anchorhead-public.min.js', array(), $this->version, false );
 
 	} // enqueue_scripts()
 
@@ -106,19 +106,23 @@ class Anchorhead_Public {
 	 */
 	public function add_anchors( $content ) {
 
-		if ( empty( $content ) ) { return $content; } // exit if content is empty
+		if ( '' === trim( $content ) ) { return $content; }
+		if ( ! in_the_loop() ) { return $content; } // exit if content is empty
 		if ( empty( $this->headings ) ) { return $content; } // exit if headings is empty
 
 		$thispageID = get_the_ID();
 
 		if ( in_array( $thispageID, $this->headings ) ) { return $content; } // exit if the page we're on isn't in the headings array
 
+		$offset = 0;
+
 		foreach ( $this->headings[$thispageID]['h2'] as $heading ) {
 
-			$content_array 		= explode( $heading['text'] . '</h2>', $content );
-			$therest 			= end( $content_array );
-			$content 			= $content_array[0] . $heading['text'] . '<span id="' . $heading['anchortext'] . '"></span><a class="ah-top" data-scroll href="#" role="link">Back to top</a></h2>' . $therest;
-			unset( $therest );
+			$anchorlink = '<span id="' . $heading['anchortext'] . '"></span><a class="ah-top" data-scroll href="#" role="link">Back to top</a></h2>';
+			$content 	= substr_replace( $content, $anchorlink, $heading['closetag'] + $offset, 0 );
+			$offset 	= strlen( $anchorlink ) + $offset;
+
+			unset( $anchorlink );
 
 		} // foreach
 
@@ -135,7 +139,8 @@ class Anchorhead_Public {
 	 */
 	public function add_menu( $content ) {
 
-		if ( empty( $content ) ) { return $content; } // exit if content is empty
+		if ( '' === trim( $content ) ) { return $content; }
+		if ( ! in_the_loop() ) { return $content; } // exit if content is empty
 		if ( empty( $this->headings ) ) { return $content; } // exit if headings is empty
 
 		$thispageID = get_the_ID();
@@ -170,9 +175,7 @@ class Anchorhead_Public {
 	 */
 	public function find_headings( $content ) {
 
-		wp_die( print_r( $content ) );
-
-		if ( empty( $content ) ) { return $content; }
+		if ( '' === trim( $content ) ) { return $content; }
 		if ( ! in_the_loop() ) { return $content; }
 
 		$dom 	= new DOMDocument();

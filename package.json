@@ -1,0 +1,38 @@
+{
+  "name": "anchorhead",
+  "version": "1.0.0",
+  "description": "=== Plugin Name === Contributors: (this should be a list of wordpress.org userid's) Donate link: http://slushman.com Tags: comments, spam Requires at least: 3.0.1 Tested up to: 3.4 Stable tag: 4.3 License: GPLv2 or later License URI: http://www.gnu.org/licenses/gpl-2.0.html",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chris Wilcoxson",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.13.0",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-filter": "^4.0.0",
+    "gulp-imagemin": "^3.0.1",
+    "gulp-line-ending-corrector": "^1.0.1",
+    "gulp-load-plugins": "^1.2.4",
+    "gulp-merge-media-queries": "^0.2.1",
+    "gulp-notify": "^2.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.4",
+    "gulp-util": "^3.0.7",
+    "gulp-wp-pot": "^1.2.2"
+},
+  "repository": {
+	  "type": "git",
+	  "url": "git+ssh://git@github.com/dccmarketing/anchorhead.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dccmarketing/anchorhead/issues"
+  },
+  "homepage": "https://github.com/dccmarketing/anchorhead#readme"
+}
