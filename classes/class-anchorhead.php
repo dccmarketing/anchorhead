@@ -113,12 +113,6 @@ class Anchorhead {
 		$this->loader->action( 'admin_enqueue_scripts', 	$plugin_admin, 'enqueue_styles' );
 		$this->loader->action( 'customize_preview_init', 	$plugin_admin, 'enqueue_styles' );
 		$this->loader->action( 'admin_enqueue_scripts', 	$plugin_admin, 'enqueue_scripts' );
-		// $this->loader->action( 'admin_init', 				$plugin_admin, 'register_fields' );
-		// $this->loader->action( 'admin_init', 				$plugin_admin, 'register_sections' );
-		// $this->loader->action( 'admin_init', 				$plugin_admin, 'register_settings' );
-		// $this->loader->action( 'admin_menu', 				$plugin_admin, 'add_menu' );
-		// $this->loader->action( 'plugin_action_links_' . ANCHORHEAD_FILE, $plugin_admin, 'link_settings' );
-		// $this->loader->action( 'plugin_row_meta', 			$plugin_admin, 'link_row_meta', 10, 2 );
 
 	} // define_admin_hooks()
 

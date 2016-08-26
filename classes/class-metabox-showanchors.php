@@ -191,11 +191,8 @@ class Anchorhead_Metabox_Showanchors {
 	 */
 	private function save_meta( $field, $posted, $post_id ) {
 
-		//wp_die( print_r( $posted['show_anchors'] ) );
-
 		if ( empty( $field ) ) { return FALSE; }
 		if ( empty( $posted ) ) { return FALSE; }
-		//if ( ! isset( $posted[$field[0]] ) ) { return FALSE; }
 
 		$sanitizer 	= new Anchorhead_Sanitize();
 		$new_value 	= $sanitizer->clean( $posted[$field[0]], $field[1] );
@@ -237,14 +234,6 @@ class Anchorhead_Metabox_Showanchors {
 		$validate = $this->pre_validation_checks( $_POST, $post_id, $post_obj );
 
 		if ( ! $validate ) { return $post_id; }
-
-		// if ( isset( $_POST['show-anchors'] ) ) {
-		//
-		// 	//wp_die( print_r( $_POST ) );
-		//
-		// 	update_post_meta( $post_id, 'show-anchors', $_POST['show-anchors'] );
-		//
-		// }
 
 		foreach ( $this->fields as $field ) {
 

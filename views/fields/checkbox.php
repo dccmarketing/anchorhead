@@ -5,9 +5,6 @@
  *
  * @package    Anchorhead
  */
-
-echo '<pre>'; print_r( $atts ); echo '</pre>';
-
 $defaults['class'] 			= 'widefat';
 $defaults['description'] 	= __( '', 'anchorhead' );
 $defaults['id'] 			= '';
