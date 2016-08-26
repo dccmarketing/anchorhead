@@ -30,6 +30,15 @@
 class Anchorhead {
 
 	/**
+	 * The current version of the plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      Plugin_Name 	$_instance 		Instance singleton.
+	 */
+	protected static $_instance;
+
+	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
 	 * the plugin.
 	 *
@@ -40,31 +49,13 @@ class Anchorhead {
 	protected $loader;
 
 	/**
-	 * The unique identifier of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
-	 */
-	protected $plugin_name;
-
-	/**
 	 * The data sanitizer.
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      Anchorhead_Sanitize    $sanitizer    Sanitizes data.
+	 * @var      Anchorhead_Sanitize    $sanitize    Sanitizes data.
 	 */
-	protected $sanitizer;
-
-	/**
-	 * The current version of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
-	 */
-	protected $version;
+	protected $sanitize;
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -77,13 +68,12 @@ class Anchorhead {
 	 */
 	public function __construct() {
 
-		$this->plugin_name 	= 'anchorhead';
-		$this->version 		= '1.0.0';
-
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->define_customizer_hooks();
+		$this->define_metabox_hooks();
 
 	} // __construct()
 
@@ -105,36 +95,7 @@ class Anchorhead {
 	 */
 	private function load_dependencies() {
 
-		/**
-		 * The class responsible for orchestrating the actions and filters of the
-		 * core plugin.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-loader.php';
-
-		/**
-		 * The class responsible for defining internationalization functionality
-		 * of the plugin.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-i18n.php';
-
-		/**
-		 * The class responsible for sanitizing user input
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-sanitize.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-admin.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-public.php';
-
-		$this->loader 		= new Anchorhead_Loader();
-		$this->sanitizer 	= new Anchorhead_Sanitize();
+		$this->loader = new Anchorhead_Loader();
 
 	} // load_dependencies()
 
@@ -147,16 +108,17 @@ class Anchorhead {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Anchorhead_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new Anchorhead_Admin();
 
 		$this->loader->action( 'admin_enqueue_scripts', 	$plugin_admin, 'enqueue_styles' );
+		$this->loader->action( 'customize_preview_init', 	$plugin_admin, 'enqueue_styles' );
 		$this->loader->action( 'admin_enqueue_scripts', 	$plugin_admin, 'enqueue_scripts' );
-		$this->loader->action( 'admin_init', 				$plugin_admin, 'register_fields' );
-		$this->loader->action( 'admin_init', 				$plugin_admin, 'register_sections' );
-		$this->loader->action( 'admin_init', 				$plugin_admin, 'register_settings' );
-		$this->loader->action( 'admin_menu', 				$plugin_admin, 'add_menu' );
-		$this->loader->action( 'plugin_action_links_' . ANCHORHEAD_FILE, $plugin_admin, 'link_settings' );
-		$this->loader->action( 'plugin_row_meta', 			$plugin_admin, 'link_row_meta', 10, 2 );
+		// $this->loader->action( 'admin_init', 				$plugin_admin, 'register_fields' );
+		// $this->loader->action( 'admin_init', 				$plugin_admin, 'register_sections' );
+		// $this->loader->action( 'admin_init', 				$plugin_admin, 'register_settings' );
+		// $this->loader->action( 'admin_menu', 				$plugin_admin, 'add_menu' );
+		// $this->loader->action( 'plugin_action_links_' . ANCHORHEAD_FILE, $plugin_admin, 'link_settings' );
+		// $this->loader->action( 'plugin_row_meta', 			$plugin_admin, 'link_row_meta', 10, 2 );
 
 	} // define_admin_hooks()
 
@@ -167,9 +129,57 @@ class Anchorhead {
 	 * @since    1.0.0
 	 * @access   private
 	 */
+	private function define_customizer_hooks() {
+
+		$plugin_customizer = new Anchorhead_Customizer();
+
+		$this->loader->action( 'customize_register', 		$plugin_customizer, 'register_controls' );
+		$this->loader->action( 'customize_register', 		$plugin_customizer, 'register_panels' );
+		$this->loader->action( 'customize_register', 		$plugin_customizer, 'register_sections' );
+		$this->loader->action( 'customize_register', 		$plugin_customizer, 'register_fields' );
+		$this->loader->action( 'wp_head', 					$plugin_customizer, 'header_output' );
+		$this->loader->action( 'customize_register', 		$plugin_customizer, 'load_customize_controls', 0 );
+		$this->loader->action( 'customize_preview_init', 	$plugin_customizer, 'enqueue_scripts', 0 );
+		$this->loader->action( 'plugin_action_links_' . ANCHORHEAD_FILE, $plugin_customizer, 'link_to_customizer' );
+
+	} // define_customizer_hooks()
+
+	/**
+	 * Register all of the hooks related to metaboxes
+	 *
+	 * @since 		1.0.0
+	 * @access 		private
+	 */
+	private function define_metabox_hooks() {
+
+		$metaboxes = array( 'Showanchors' );
+
+		if ( empty( $metaboxes ) ) { return; }
+
+		foreach ( $metaboxes as $box ) {
+
+			$class 	= 'Anchorhead_Metabox_' . $box;
+			$box 	= new $class();
+
+			$this->loader->action( 'add_meta_boxes', 		$box, 'add_metaboxes', 10, 2 );
+			$this->loader->action( 'add_meta_boxes', 		$box, 'set_meta', 10, 2 );
+			$this->loader->action( 'save_post', 			$box, 'validate_meta', 10, 2 );
+			$this->loader->action( 'edit_form_after_title', $box, 'promote_metaboxes', 10, 1 );
+
+		}
+
+	} // define_metabox_hooks()
+
+	/**
+	 * Register all of the hooks related to the public-facing functionality
+	 * of the plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Anchorhead_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new Anchorhead_Public();
 
 		$this->loader->action( 'wp_enqueue_scripts', 	$plugin_public, 'enqueue_styles' );
 		$this->loader->action( 'wp_enqueue_scripts', 	$plugin_public, 'enqueue_scripts' );
@@ -181,6 +191,24 @@ class Anchorhead {
 	} // define_public_hooks()
 
 	/**
+	 * Get instance of main class
+	 *
+	 * @since 		1.0.0
+	 * @return 		Anchorhead
+	 */
+	public static function get_instance() {
+
+		if ( empty( self::$_instance ) ) {
+
+			self::$_instance = new self;
+
+		}
+
+		return self::$_instance;
+
+	} // get_instance()
+
+	/**
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since     1.0.0
@@ -188,27 +216,6 @@ class Anchorhead {
 	 */
 	public function get_loader() {
 		return $this->loader;
-	}
-
-	/**
-	 * The name of the plugin used to uniquely identify it within the context of
-	 * WordPress and to define internationalization functionality.
-	 *
-	 * @since     1.0.0
-	 * @return    string    The name of the plugin.
-	 */
-	public function get_plugin_name() {
-		return $this->plugin_name;
-	}
-
-	/**
-	 * Retrieve the version number of the plugin.
-	 *
-	 * @since     1.0.0
-	 * @return    string    The version number of the plugin.
-	 */
-	public function get_version() {
-		return $this->version;
 	}
 
 	/**

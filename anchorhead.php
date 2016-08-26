@@ -10,8 +10,8 @@
  * @wordpress-plugin
  * Plugin Name:       Anchorhead
  * Plugin URI:        http://slushman.com/anchorhead
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           1.0.0
+ * Description:       Adds anchor links to the h2 heading in a page/post.
+ * Version:           1.1
  * Author:            Slushman
  * Author URI:        http://slushman.com
  * License:           GPL-2.0+
@@ -23,38 +23,85 @@
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) { die; }
 
-// Used for referring to the plugin file or basename
-if ( ! defined( 'ANCHORHEAD_FILE' ) ) {
-	define( 'ANCHORHEAD_FILE', plugin_basename( __FILE__ ) );
-}
+/**
+ * Define constants
+ */
+define( 'ANCHORHEAD_VERSION', '1.1' );
+define( 'ANCHORHEAD_SLUG', 'anchorhead' );
+define( 'ANCHORHEAD_FILE', plugin_basename( __FILE__ ) );
 
 /**
- * Runs during plugin activation.
- * This action is documented in classes/class-activator.php
+ * Activation/Deactivation Hooks
  */
-require_once plugin_dir_path( __FILE__ ) . 'classes/class-activator.php';
 register_activation_hook( __FILE__, array( 'Anchorhead_Activator', 'activate' ) );
-
-/**
- * Code that runs during plugin deactivation.
- * This action is documented in classes/class-deactivator.php
- */
-require_once plugin_dir_path( __FILE__ ) . 'classes/class-deactivator.php';
 register_deactivation_hook( __FILE__, array( 'Anchorhead_Deactivator', 'deactivate' ) );
 
 /**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
+ * Autoloader function
+ *
+ * Will search both plugin root and includes folder for class
+ *
+ * @param string $class_name
  */
-require plugin_dir_path( __FILE__ ) . 'classes/class-anchorhead.php';
+if ( ! function_exists( 'anchorhead_autoloader' ) ) :
 
-/**
- * Begins execution of the plugin.
- *
- * Since everything within the plugin is registered via hooks,
- * then kicking off the plugin from this point in the file does
- * not affect the page life cycle.
- *
- * @since    1.0.0
- */
-call_user_func( array( new Anchorhead(), 'run' ) );
+	function anchorhead_autoloader( $class_name ) {
+
+		$class_name = str_replace( 'Anchorhead_', '', $class_name );
+		$lower 		= strtolower( $class_name );
+		$file      	= 'class-' . str_replace( '_', '-', $lower ) . '.php';
+		$base_path 	= plugin_dir_path( __FILE__ );
+		$paths[] 	= $base_path . $file;
+		$paths[] 	= $base_path . 'classes/' . $file;
+
+		/**
+		 * plugin_name_autoloader_paths filter
+		 */
+		$paths = apply_filters( 'anchorhead-autoloader-paths', $paths );
+
+		foreach ( $paths as $path ) :
+
+			if ( is_readable( $path ) && file_exists( $path ) ) {
+
+				require_once( $path );
+				return;
+
+			}
+
+		endforeach;
+
+	} // anchorhead_autoloader()
+
+endif;
+
+spl_autoload_register( 'anchorhead_autoloader' );
+
+if ( ! function_exists( 'anchorhead_init' ) ) :
+
+	/**
+	 * Function to initialize plugin
+	 */
+	function anchorhead_init() {
+
+		anchorhead()->run();
+
+	}
+
+	add_action( 'plugins_loaded', 'anchorhead_init' );
+
+endif;
+
+if ( ! function_exists( 'anchorhead' ) ) :
+
+	/**
+	 * Function wrapper to get instance of plugin
+	 *
+	 * @return Anchorhead
+	 */
+	function anchorhead() {
+
+		return Anchorhead::get_instance();
+
+	}
+
+endif;

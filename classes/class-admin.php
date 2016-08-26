@@ -32,34 +32,11 @@ class Anchorhead_Admin {
 	private $options;
 
 	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
-	private $plugin_name;
-
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
-	private $version;
-
-	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
-
-		$this->plugin_name 	= $plugin_name;
-		$this->version 		= $version;
+	public function __construct() {
 
 		$this->set_options();
 
@@ -70,8 +47,11 @@ class Anchorhead_Admin {
 	 *
 	 * @link 		https://codex.wordpress.org/classesistration_Menus
 	 * @since 		1.0.0
+	 * @return 		array 			Array of menu hooks
 	 */
-	public function add_menu() {
+	public static function add_menu() {
+
+		$menu_hooks = array();
 
 		// Top-level page
 		// add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
@@ -79,14 +59,18 @@ class Anchorhead_Admin {
 		// Submenu Page
 		// add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function);
 
-		add_submenu_page(
+		$menu_hooks[] = add_submenu_page(
 			'options-general.php',
-			apply_filters( $this->plugin_name . '-settings-page-title', esc_html__( 'Anchorhead Settings', 'anchorhead' ) ),
-			apply_filters( $this->plugin_name . '-settings-menu-title', esc_html__( 'Anchorhead Settings', 'anchorhead' ) ),
+			apply_filters( ANCHORHEAD_SLUG . '-settings-page-title', esc_html__( 'Anchorhead Settings', 'anchorhead' ) ),
+			apply_filters( ANCHORHEAD_SLUG . '-settings-menu-title', esc_html__( 'Anchorhead', 'anchorhead' ) ),
 			'manage_options',
-			$this->plugin_name . '-settings',
+			ANCHORHEAD_SLUG . '-settings',
 			array( $this, 'page_options' )
 		);
+
+		//echo '<pre>'; print_r( $menu_hooks ); echo '</pre>';
+
+		return $menu_hooks;
 
 	} // add_menu()
 
@@ -97,7 +81,7 @@ class Anchorhead_Admin {
 	 */
 	public function enqueue_styles() {
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( dirname( __FILE__ ) ) . 'assets/css/anchorhead-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( ANCHORHEAD_SLUG, plugin_dir_url( dirname( __FILE__ ) ) . 'assets/css/anchorhead-admin.css', array(), ANCHORHEAD_VERSION, 'all' );
 
 	} // enqueue_styles()
 
@@ -108,9 +92,20 @@ class Anchorhead_Admin {
 	 */
 	public function enqueue_scripts() {
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( dirname( __FILE__ ) ) . 'assets/js/anchorhead-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( ANCHORHEAD_SLUG, plugin_dir_url( dirname( __FILE__ ) ) . 'assets/js/anchorhead-admin.min.js', array( 'jquery' ), ANCHORHEAD_VERSION, true );
 
 	} // enqueue_scripts()
+
+	/**
+	 * Register the JavaScript for the admin area.
+	 *
+	 * @since    1.0.0
+	 */
+	public function enqueue_scripts_customizer() {
+
+		//wp_enqueue_script( ANCHORHEAD_SLUG, plugin_dir_url( dirname( __FILE__ ) ) . 'assets/js/anchorhead-admin.js', array( 'jquery' ), ANCHORHEAD_VERSION, false );
+
+	} // enqueue_scripts_customizer()
 
 	/**
 	 * Creates a checkbox field
@@ -124,7 +119,7 @@ class Anchorhead_Admin {
 		$defaults['class'] 			= '';
 		$defaults['description'] 	= '';
 		$defaults['label'] 			= '';
-		$defaults['name'] 			= $this->plugin_name . '-options[' . $args['id'] . ']';
+		$defaults['name'] 			= ANCHORHEAD_SLUG . '-options[' . $args['id'] . ']';
 		$defaults['value'] 			= 0;
 
 		/**
@@ -132,7 +127,7 @@ class Anchorhead_Admin {
 		 *
 		 * @param 	array 	$defaults 		The default settings for the field
 		 */
-		$defaults 	= apply_filters( $this->plugin_name . '-field-checkbox-options-defaults', $defaults );
+		$defaults 	= apply_filters( ANCHORHEAD_SLUG . '-field-checkbox-options-defaults', $defaults );
 		$atts 		= wp_parse_args( $args, $defaults );
 
 		if ( ! empty( $this->options[$atts['id']] ) ) {
@@ -141,9 +136,40 @@ class Anchorhead_Admin {
 
 		}
 
-		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/view-field-checkbox.php' );
+		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/fields/checkbox.php' );
 
 	} // field_checkbox()
+
+	/**
+	 * Creates a text field
+	 *
+	 * @param 	array 		$args 			The arguments for the field
+	 *
+	 * @return 	string 						The HTML field
+	 */
+	public function field_editor( $args ) {
+
+		$defaults['description'] 	= '';
+		$defaults['settings'] 		= array();
+		$defaults['value']			= '';
+
+		/**
+		 * plugin-name-field-text-options-defaults filter
+		 *
+		 * @param 	array 	$defaults 		The default settings for the field
+		 */
+		$defaults 	= apply_filters( PLUGIN_NAME_SLUG . '-field-editor-options-defaults', $defaults );
+		$atts 		= wp_parse_args( $args, $defaults );
+
+		if ( ! empty( $this->options[$atts['id']] ) ) {
+
+			$atts['value'] = $this->options[$atts['id']];
+
+		}
+
+		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/fields/editor.php' );
+
+	} // field_editor()
 
 	/**
 	 * Creates a set of radios field
@@ -157,7 +183,7 @@ class Anchorhead_Admin {
 		$defaults['class'] 			= '';
 		$defaults['description'] 	= '';
 		$defaults['label'] 			= '';
-		$defaults['name'] 			= $this->plugin_name . '-options[' . $args['id'] . ']';
+		$defaults['name'] 			= ANCHORHEAD_SLUG . '-options[' . $args['id'] . ']';
 		$defaults['value'] 			= 0;
 
 		/**
@@ -165,7 +191,7 @@ class Anchorhead_Admin {
 		 *
 		 * @param 	array 	$defaults 		The default settings for the field
 		 */
-		$defaults 	= apply_filters( $this->plugin_name . '-field-radios-options-defaults', $defaults );
+		$defaults 	= apply_filters( ANCHORHEAD_SLUG . '-field-radios-options-defaults', $defaults );
 		$atts 		= wp_parse_args( $args, $defaults );
 
 		if ( ! empty( $this->options[$atts['id']] ) ) {
@@ -174,7 +200,7 @@ class Anchorhead_Admin {
 
 		}
 
-		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/view-field-radios.php' );
+		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/fields/radios.php' );
 
 	} // field_radios()
 
@@ -195,7 +221,7 @@ class Anchorhead_Admin {
 		$defaults['context'] 		= '';
 		$defaults['description'] 	= '';
 		$defaults['label'] 			= '';
-		$defaults['name'] 			= $this->plugin_name . '-options[' . $args['id'] . ']';
+		$defaults['name'] 			= ANCHORHEAD_SLUG . '-options[' . $args['id'] . ']';
 		$defaults['selections'] 	= array();
 		$defaults['value'] 			= '';
 
@@ -204,7 +230,7 @@ class Anchorhead_Admin {
 		 *
 		 * @param 	array 	$defaults 		The default settings for the field
 		 */
-		$defaults 	= apply_filters( $this->plugin_name . '-field-select-options-defaults', $defaults );
+		$defaults 	= apply_filters( ANCHORHEAD_SLUG . '-field-select-options-defaults', $defaults );
 		$atts 		= wp_parse_args( $args, $defaults );
 
 		if ( ! empty( $this->options[$atts['id']] ) ) {
@@ -223,7 +249,7 @@ class Anchorhead_Admin {
 
 		}
 
-		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/view-field-select.php' );
+		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/fields/select.php' );
 
 	} // field_select()
 
@@ -239,7 +265,7 @@ class Anchorhead_Admin {
 		$defaults['class'] 			= 'text widefat';
 		$defaults['description'] 	= '';
 		$defaults['label'] 			= '';
-		$defaults['name'] 			= $this->plugin_name . '-options[' . $args['id'] . ']';
+		$defaults['name'] 			= ANCHORHEAD_SLUG . '-options[' . $args['id'] . ']';
 		$defaults['placeholder'] 	= '';
 		$defaults['type'] 			= 'text';
 		$defaults['value'] 			= '';
@@ -249,7 +275,7 @@ class Anchorhead_Admin {
 		 *
 		 * @param 	array 	$defaults 		The default settings for the field
 		 */
-		$defaults 	= apply_filters( $this->plugin_name . '-field-text-options-defaults', $defaults );
+		$defaults 	= apply_filters( ANCHORHEAD_SLUG . '-field-text-options-defaults', $defaults );
 		$atts 		= wp_parse_args( $args, $defaults );
 
 		if ( ! empty( $this->options[$atts['id']] ) ) {
@@ -258,7 +284,7 @@ class Anchorhead_Admin {
 
 		}
 
-		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/view-field-text.php' );
+		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/fields/text.php' );
 
 	} // field_text()
 
@@ -276,7 +302,7 @@ class Anchorhead_Admin {
 		$defaults['context'] 		= '';
 		$defaults['description'] 	= '';
 		$defaults['label'] 			= '';
-		$defaults['name'] 			= $this->plugin_name . '-options[' . $args['id'] . ']';
+		$defaults['name'] 			= ANCHORHEAD_SLUG . '-options[' . $args['id'] . ']';
 		$defaults['rows'] 			= 10;
 		$defaults['value'] 			= '';
 
@@ -285,7 +311,7 @@ class Anchorhead_Admin {
 		 *
 		 * @param 	array 	$defaults 		The default settings for the field
 		 */
-		$defaults 	= apply_filters( $this->plugin_name . '-field-textarea-options-defaults', $defaults );
+		$defaults 	= apply_filters( ANCHORHEAD_SLUG . '-field-textarea-options-defaults', $defaults );
 		$atts 		= wp_parse_args( $args, $defaults );
 
 		if ( ! empty( $this->options[$atts['id']] ) ) {
@@ -294,7 +320,7 @@ class Anchorhead_Admin {
 
 		}
 
-		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/view-field-textarea.php' );
+		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/fields/textarea.php' );
 
 	} // field_textarea()
 
@@ -320,7 +346,6 @@ class Anchorhead_Admin {
 	 * @since 		1.0.0
 	 *
 	 * @param 		array 		$links 		The current array of links
-	 *
 	 * @return 		array 					The modified array of links
 	 */
 	public function link_settings( $links ) {
@@ -362,7 +387,7 @@ class Anchorhead_Admin {
 	 */
 	public function page_options() {
 
-		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/view-page-settings.php' );
+		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/pages/settings.php' );
 
 	} // page_options()
 
@@ -375,10 +400,10 @@ class Anchorhead_Admin {
 
 		add_settings_field(
 			'scroll-speed',
-			apply_filters( $this->plugin_name . '-label-scroll-speed', esc_html__( 'Scroll Speed', 'anchorhead' ) ),
+			apply_filters( ANCHORHEAD_SLUG . '-label-scroll-speed', esc_html__( 'Scroll Speed', 'anchorhead' ) ),
 			array( $this, 'field_text' ),
-			$this->plugin_name,
-			$this->plugin_name . '-smooth-scroll',
+			ANCHORHEAD_SLUG,
+			ANCHORHEAD_SLUG . '-smooth-scroll',
 			array(
 				'class' 		=> 'text',
 				'description' 	=> __( 'How fast (in milliseconds) the smooth scrolling should go to the anchor links. Zero will jump immediately.', 'anchorhead' ),
@@ -390,10 +415,10 @@ class Anchorhead_Admin {
 
 		add_settings_field(
 			'scroll-type',
-			apply_filters( $this->plugin_name . '-label-scroll-type', esc_html__( 'Scroll Type', 'anchorhead' ) ),
+			apply_filters( ANCHORHEAD_SLUG . '-label-scroll-type', esc_html__( 'Scroll Type', 'anchorhead' ) ),
 			array( $this, 'field_select' ),
-			$this->plugin_name,
-			$this->plugin_name . '-smooth-scroll',
+			ANCHORHEAD_SLUG,
+			ANCHORHEAD_SLUG . '-smooth-scroll',
 			array(
 				'description' 	=> __( 'Learn about the different patterns and what they do at easings.net.', 'anchorhead' ),
 				'id' 			=> 'scroll-type',
@@ -426,10 +451,10 @@ class Anchorhead_Admin {
 		// add_settings_section( $id, $title, $callback, $menu_slug );
 
 		add_settings_section(
-			$this->plugin_name . '-smooth-scroll',
-			apply_filters( $this->plugin_name . '-section-smooth-scroll-title', esc_html__( 'Smooth Scroll Settings', 'anchorhead' ) ),
+			ANCHORHEAD_SLUG . '-smooth-scroll',
+			apply_filters( ANCHORHEAD_SLUG . '-section-smooth-scroll-title', esc_html__( 'Smooth Scroll Settings', 'anchorhead' ) ),
 			array( $this, 'section_smooth_scroll' ),
-			$this->plugin_name
+			ANCHORHEAD_SLUG
 		);
 
 	} // register_sections()
@@ -444,8 +469,8 @@ class Anchorhead_Admin {
 		// register_setting( $option_group, $option_name, $sanitize_callback );
 
 		register_setting(
-			$this->plugin_name . '-options',
-			$this->plugin_name . '-options',
+			ANCHORHEAD_SLUG . '-options',
+			ANCHORHEAD_SLUG . '-options',
 			array( $this, 'validate_options' )
 		);
 
@@ -464,7 +489,7 @@ class Anchorhead_Admin {
 
 		$message = __( 'Settings related to smooth scrolling feature.', 'anchorhead' );
 
-		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/view-section-settingssection.php' );
+		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/sections/settingssection.php' );
 
 	} // section_smooth_scroll()
 
@@ -473,7 +498,7 @@ class Anchorhead_Admin {
 	 */
 	private function set_options() {
 
-		$this->options = get_option( $this->plugin_name . '-options' );
+		$this->options = get_option( ANCHORHEAD_SLUG . '-options' );
 
 	} // set_options()
 

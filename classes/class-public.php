@@ -41,36 +41,13 @@ class Anchorhead_Public {
 	private $options;
 
 	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
-	private $plugin_name;
-
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
-	private $version;
-
-	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of the plugin.
-	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct() {
 
-		$this->plugin_name 	= $plugin_name;
-		$this->version 		= $version;
-		$this->headings 	= array();
-
+		$this->headings = array();
 		$this->set_options();
 
 	} // __construct()
@@ -82,7 +59,7 @@ class Anchorhead_Public {
 	 */
 	public function enqueue_styles() {
 
-		wp_enqueue_style( $this->plugin_name . '-public', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/css/anchorhead-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( ANCHORHEAD_SLUG . '-public', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/css/anchorhead-public.css', array(), ANCHORHEAD_VERSION, 'all' );
 
 	} // enqueue_styles()
 
@@ -93,7 +70,7 @@ class Anchorhead_Public {
 	 */
 	public function enqueue_scripts() {
 
-		wp_enqueue_script( $this->plugin_name . 'smooth-scroll', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/js/anchorhead-public.min.js', array(), $this->version, false );
+		wp_enqueue_script( ANCHORHEAD_SLUG . 'smooth-scroll', plugin_dir_url( dirname( __FILE__ ) ) . 'assets/js/anchorhead-public.min.js', array(), ANCHORHEAD_VERSION, false );
 
 	} // enqueue_scripts()
 
@@ -147,8 +124,11 @@ class Anchorhead_Public {
 
 		if ( in_array( $thispageID, $this->headings ) ) { return $content; } // exit if the page we're on isn't in the headings array
 
+		$float = get_theme_mod( 'float_picker' );
+
 		$return = '';
-		$return .= '<ul class="ah-menu">';
+		$return .= '<ul class="ah-menu" data-float="' . esc_attr( $float ) . '">';
+		$return .= '<h3 id="toc-title"></h3>';
 
 		foreach ( $this->headings[$thispageID]['h2'] as $heading ) {
 
@@ -178,6 +158,12 @@ class Anchorhead_Public {
 		if ( '' === trim( $content ) ) { return $content; }
 		if ( ! in_the_loop() ) { return $content; }
 
+		global $post;
+
+		$meta = get_post_custom( $post->ID );
+
+		if ( 0 === $meta['show-anchors'] ) { return $content; }
+
 		$dom 	= new DOMDocument();
 		$h2arr 	= array();
 		$pageID = get_the_ID();
@@ -196,10 +182,11 @@ class Anchorhead_Public {
 
 			if ( ! $textbegin && 0 >= $textlength ) { continue; }
 
-			$h2_args['textend'] 	= $textbegin + $textlength + 5; // string position of the end of the closing heading tag
 			$h2_args['anchortext']  = sanitize_title( $text );
 			$h2_args['text'] 		= $text;
 			$h2_args['textbegin'] 	= $textbegin;
+			$h2_args['closetag'] 	= $textbegin + $textlength;
+			$h2_args['textend'] 	= $textbegin + $textlength + 5; // string position of the end of the closing heading tag
 			$h2_args['textlength'] 	= $textlength;
 
 			$this->headings[$pageID]['h2'][] = $h2_args;
@@ -212,12 +199,26 @@ class Anchorhead_Public {
 
 	} // find_headings()
 
+	public function get_headings( $page = '' ) {
+
+		if ( empty( $page ) ) {
+
+			return $this->headings;
+
+		} else {
+
+			return $this->headings[$page];
+
+		}
+
+	} // get_headings()
+
 	/**
 	 * Sets the class variable $options
 	 */
 	private function set_options() {
 
-		$this->options = get_option( $this->plugin_name . '-options' );
+		$this->options = get_option( ANCHORHEAD_SLUG . '-options' );
 
 	} // set_options()
 

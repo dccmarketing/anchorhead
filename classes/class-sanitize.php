@@ -46,7 +46,7 @@ class Anchorhead_Sanitize {
 
 		if ( is_wp_error( $check ) ) {
 
-			wp_die( $check->get_error_message(), __( 'Forgot data type', 'anchorhead' ) );
+			return $check;
 
 		}
 
@@ -75,8 +75,9 @@ class Anchorhead_Sanitize {
 			case 'month'			:
 			case 'text'				: $sanitized = sanitize_text_field( $data ); break;
 
-			case 'checkbox'			: $sanitized = ( isset( $data ) ? 1 : 0 ); break;
+			case 'checkbox'			: $sanitized = $this->sanitize_checkbox( $data ); break;
 			case 'color' 			: $sanitized = $this->sanitize_hex_color( $data ); break;
+			case 'editor' 			: $sanitized = wp_kses_post( $data ); break;
 			case 'email'			: $sanitized = sanitize_email( $data ); break;
 			case 'file'				: $sanitized = sanitize_file_name( $data ); break;
 			case 'tel'				: $sanitized = $this->sanitize_phone( $data ); break;
@@ -123,6 +124,23 @@ class Anchorhead_Sanitize {
 	} // validate_date()
 
 	/**
+	 * Sanitizes checkbox input.
+	 *
+	 * Checks if the data is set, returns FALSE if not.
+	 * Checks if the data is an int, returns FALSE if not.
+	 *
+	 * Returns either 1 or 0 based on the passed in data.
+	 *
+	 * @param 		int 		$data 		The checkbox data.
+	 * @return 		int|bool 				1 or 0, otherwise FALSE.
+	 */
+	private function sanitize_checkbox( $data ) {
+
+		return isset( $data ) ? 1 : 0;
+
+	} // sanitize_checkbox()
+
+	/**
 	 * Validates the input is a hex color.
 	 *
 	 * @param 	string 		$color 			The hex color string
@@ -131,7 +149,7 @@ class Anchorhead_Sanitize {
 	 */
 	private function sanitize_hex_color( $color ) {
 
-		if ( empty( $color ) ) { return; }
+		if ( empty( $color ) ) { return FALSE; }
 
 		$return = '';
 		$color 	= trim( $color );
@@ -180,9 +198,11 @@ class Anchorhead_Sanitize {
 	 */
 	private function sanitize_random( $input ) {
 
-			$one	= trim( $input );
-			$two	= stripslashes( $one );
-			$return	= htmlspecialchars( $two );
+		if ( empty( $input ) ) { return FALSE; }
+
+		$one	= trim( $input );
+		$two	= stripslashes( $one );
+		$return	= htmlspecialchars( $two );
 
 		return $return;
 
