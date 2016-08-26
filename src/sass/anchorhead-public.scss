@@ -24,10 +24,15 @@
 	margin-left 	: 2em !important;
 }
 
-#toc-title {
+.toc-title {
+	margin-top: 0;
 
 	&:empty{
 		margin 	: 0;
 		padding : 0;
 	}
+}
+
+h2.inline-heading {
+	display: inline;
 }

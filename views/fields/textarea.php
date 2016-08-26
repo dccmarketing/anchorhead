@@ -15,8 +15,13 @@ $defaults['rows'] 			= 10;
 $defaults['value'] 			= '';
 $atts 						= wp_parse_args( $atts, $defaults );
 
-?><label for="<?php echo esc_attr( $atts['id'] ); ?>"><?php echo wp_kses( $atts['label'], array( 'code' => array() ) ); ?>: </label>
-<textarea
+if ( ! empty( $atts['label'] ) ) :
+
+	?><label for="<?php echo esc_attr( $atts['id'] ); ?>"><?php echo wp_kses( $atts['label'], array( 'code' => array() ) ); ?>: </label><?php
+
+endif;
+
+?><textarea
 	class="<?php echo esc_attr( $atts['class'] ); ?>"
 	cols="<?php echo esc_attr( $atts['cols'] ); ?>"
 	id="<?php echo esc_attr( $atts['id'] ); ?>"

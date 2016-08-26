@@ -13,7 +13,7 @@
 	// Table of Contents Title.
 	api( 'toc_title', function( value ) {
 		value.bind( function( to ) {
-			$( '#toc-title' ).text( to );
+			$( '.toc-title' ).text( to );
 		} );
 	} );
 

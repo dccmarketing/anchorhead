@@ -31,7 +31,18 @@ class Anchorhead_Activator {
 	 */
 	public static function activate() {
 
-		//
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'classes/class-admin.php';
+
+		$opts 		= array();
+		$options 	= Anchorhead_Admin::get_options_list();
+
+		foreach ( $options as $option ) {
+
+			$opts[ $option[0] ] = $option[2];
+
+		}
+
+		update_option( 'anchorhead-options', $opts );
 
 	} // activate()
 

@@ -16,8 +16,13 @@ $defaults['selections'] 	= array();
 $defaults['value'] 			= '';
 $atts 						= wp_parse_args( $atts, $defaults );
 
-?><label for="<?php echo esc_attr( $atts['id'] ); ?>"><?php echo wp_kses( $atts['label'], array( 'code' => array() ) ); ?>: </label>
-<select
+if ( ! empty( $atts['label'] ) ) :
+
+	?><label for="<?php echo esc_attr( $atts['id'] ); ?>"><?php echo wp_kses( $atts['label'], array( 'code' => array() ) ); ?>: </label><?php
+
+endif;
+
+?><select
 	aria-label="<?php echo wp_kses( $atts['aria'], array( 'code' => array() ) ); ?>"
 	class="<?php echo esc_attr( $atts['class'] ); ?>"
 	id="<?php echo esc_attr( $atts['id'] ); ?>"

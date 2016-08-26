@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== Anchorhead ===
 Contributors: slushman
 Donate link: http://slushman.com
 Tags:
@@ -17,6 +17,10 @@ Creates a table of contents at the top of a page or post with anchor links to h2
 This happens automagically on every page/post.
 
 
+@todo: Make the threshhold value bigger as the menu gets longer so you avoid conflicts.
+@todo: Should headings with no back-to-top link be listed in the menu?
+
+
 
 == Installation ==
 
@@ -27,13 +31,11 @@ This happens automagically on every page/post.
 
 == Frequently Asked Questions ==
 
-= A question that someone might have =
+= Troubleshooting tip: =
 
-An answer to that question.
+If the "back to top" links appear in odd places, check the formatting on the H2 tags. They should only be an H2 tag, not bold, italicizes, or linked. Additional tags break how the plugin finds the H2 headings which then causes the "back to top" links to appear in odd places.
 
-= What about foo bar? =
 
-Answer to foo bar dilemma.
 
 == Screenshots ==
 
@@ -43,7 +45,16 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 (or jpg, jpeg, gif).
 2. This is the second screen shot
 
+
+
 == Changelog ==
+
+= 1.1 =
+* Adds metabox to all pages allowing the anchor menu to be turned off for that page.
+* Updates classes and views.
+* Updates default styling.
+* Changes table of contents title to a class and updates scripts and styling accordingly.
+* New option allows for not adding a "back to top" link to the headings close to the top of the page. Instead, it makes those headings inline, so they wrap around the menu.
 
 = 1.0.1 =
 * Updating to latest plugin structure. Adds autoloader.
@@ -55,6 +66,9 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 
 
 == Upgrade Notice ==
+
+= 1.1 =
+* Adds per-page option to not display anchor menu.
 
 = 1.0.1 =
 * Fixes bug with "back to top" links and disappearing content.

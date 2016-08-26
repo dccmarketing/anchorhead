@@ -44,7 +44,10 @@ var watch = {
 		'path': './src/js/',
 		'source': './src/js/**/*.js',
 	},
-	'styles': './src/sass/**/*.scss',
+	'styles': {
+		'source': './src/sass/**/*.scss',
+		'dest': './assets/css/'
+	}
 }
 
 /**
@@ -88,22 +91,20 @@ var es 				= require( 'event-stream' );
  * Creates style files and put them in the root folder.
  */
 gulp.task( 'styles', function () {
-	gulp.src( watch.styles )
+	gulp.src( watch.styles.source )
 		.pipe( plugins.sourcemaps.init() )
 		.pipe( plugins.sass( {
 			errLogToConsole: true,
-			includePaths: ['./sass'],
 			outputStyle: 'compact',
 			precision: 10
 		} ) )
-		.on('error', console.error.bind(console))
-		.pipe( plugins.autoprefixer( AUTOPREFIXER_BROWSERS ) )
-		.pipe( plugins.sourcemaps.write ( './', { includeContent: false } ) )
-		.pipe( gulp.dest( './' ) )
+		.on( 'error', console.error.bind( console ) )
+		.pipe( plugins.sourcemaps.write( './' ) )
 		.pipe( plugins.filter( '**/*.css' ) ) // Filtering stream to only css files
+		.pipe( plugins.autoprefixer( AUTOPREFIXER_BROWSERS ) )
 		.pipe( plugins.mergeMediaQueries( { log: true } ) ) // Merge Media Queries
 		.pipe( plugins.cssnano() )
-		.pipe( gulp.dest( './assets/css/') )
+		.pipe( gulp.dest( watch.styles.dest ) )
 
 		.pipe( plugins.filter( '**/*.css' ) ) // Filtering stream to only css files
 		.pipe( browserSync.stream() ) // Reloads style.css if that is enqueued.
@@ -196,6 +197,6 @@ gulp.task( 'zipIt', function() {
 */
 gulp.task( 'default', ['translate', 'images', 'browser-sync', 'styles', 'scripts'], function () {
 	gulp.watch( watch.php, reload ); // Reload on PHP file changes.
-	gulp.watch( watch.styles, ['styles', reload] ); // Reload on SCSS file changes.
+	gulp.watch( watch.styles.source, ['styles', reload] ); // Reload on SCSS file changes.
 	gulp.watch( watch.scripts.source, [ 'scripts', reload ] ); // Reload on publicJS file changes.
 });

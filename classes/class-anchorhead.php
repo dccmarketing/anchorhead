@@ -34,7 +34,7 @@ class Anchorhead {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      Plugin_Name 	$_instance 		Instance singleton.
+	 * @var      Anchorhead 	$_instance 		Instance singleton.
 	 */
 	protected static $_instance;
 
@@ -113,6 +113,12 @@ class Anchorhead {
 		$this->loader->action( 'admin_enqueue_scripts', 	$plugin_admin, 'enqueue_styles' );
 		$this->loader->action( 'customize_preview_init', 	$plugin_admin, 'enqueue_styles' );
 		$this->loader->action( 'admin_enqueue_scripts', 	$plugin_admin, 'enqueue_scripts' );
+		$this->loader->action( 'admin_init', 				$plugin_admin, 'register_fields' );
+		$this->loader->action( 'admin_init', 				$plugin_admin, 'register_sections' );
+		$this->loader->action( 'admin_init', 				$plugin_admin, 'register_settings' );
+		$this->loader->action( 'admin_menu', 				$plugin_admin, 'add_menu' );
+		$this->loader->action( 'plugin_action_links_' . ANCHORHEAD_FILE, $plugin_admin, 'link_settings' );
+		$this->loader->action( 'plugin_row_meta', 			$plugin_admin, 'link_row_meta', 10, 2 );
 
 	} // define_admin_hooks()
 
@@ -134,7 +140,7 @@ class Anchorhead {
 		$this->loader->action( 'wp_head', 					$plugin_customizer, 'header_output' );
 		$this->loader->action( 'customize_register', 		$plugin_customizer, 'load_customize_controls', 0 );
 		$this->loader->action( 'customize_preview_init', 	$plugin_customizer, 'enqueue_scripts', 0 );
-		$this->loader->action( 'plugin_action_links_' . ANCHORHEAD_FILE, $plugin_customizer, 'link_to_customizer' );
+		//$this->loader->action( 'plugin_action_links_' . ANCHORHEAD_FILE, $plugin_customizer, 'link_to_customizer' );
 
 	} // define_customizer_hooks()
 
@@ -177,7 +183,7 @@ class Anchorhead {
 
 		$this->loader->action( 'wp_enqueue_scripts', 	$plugin_public, 'enqueue_styles' );
 		$this->loader->action( 'wp_enqueue_scripts', 	$plugin_public, 'enqueue_scripts' );
-		$this->loader->filter( 'wp_footer', 			$plugin_public, 'start_smooth_scroll' );
+		$this->loader->filter( 'wp_footer', 			$plugin_public, 'start_smooth_scroll', 99 );
 		$this->loader->filter( 'the_content', 			$plugin_public, 'find_headings' , 50 );
 		$this->loader->filter( 'the_content', 			$plugin_public, 'add_anchors' , 60 );
 		$this->loader->filter( 'the_content', 			$plugin_public, 'add_menu' , 70 );

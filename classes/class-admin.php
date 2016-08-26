@@ -327,14 +327,18 @@ class Anchorhead_Admin {
 	/**
 	 * Returns an array of options names, fields types, and default values
 	 *
+	 * Each item consists of the following:
+	 * 		option name, field type, default value (used during plugin activation)
+	 *
 	 * @return 		array 			An array of options
 	 */
 	public static function get_options_list() {
 
 		$options = array();
 
-		$options[] = array( 'scroll-speed', 'number', '' );
-		$options[] = array( 'scroll-type', 'select', '' );
+		$options[] = array( 'top-link-threshhold', 'number', '25' );
+		$options[] = array( 'scroll-speed', 'number', '650' );
+		$options[] = array( 'scroll-type', 'select', 'easeInOutQuad' );
 
 		return $options;
 
@@ -441,6 +445,21 @@ class Anchorhead_Admin {
 			)
 		);
 
+		add_settings_field(
+			'top-link-threshhold',
+			apply_filters( ANCHORHEAD_SLUG . '-label-top-link-threshhold', esc_html__( 'Top Link Threshhold', 'anchorhead' ) ),
+			array( $this, 'field_text' ),
+			ANCHORHEAD_SLUG,
+			ANCHORHEAD_SLUG . '-display',
+			array(
+				'class' 		=> '',
+				'description' 	=> __( 'How many characters from the beginning of the content will the plugin begin adding the "back to top" links to H2 headings. No value will add the links to all H2 headings.', 'anchorhead' ),
+				'id' 			=> 'top-link-threshhold',
+				'type' 			=> 'number',
+				'value' 		=> '25',
+			)
+		);
+
 	} // register_fields()
 
 	/**
@@ -449,6 +468,13 @@ class Anchorhead_Admin {
 	public function register_sections() {
 
 		// add_settings_section( $id, $title, $callback, $menu_slug );
+
+		add_settings_section(
+			ANCHORHEAD_SLUG . '-display',
+			apply_filters( ANCHORHEAD_SLUG . '-section-display-title', esc_html__( 'Display Settings', 'anchorhead' ) ),
+			array( $this, 'section_display' ),
+			ANCHORHEAD_SLUG
+		);
 
 		add_settings_section(
 			ANCHORHEAD_SLUG . '-smooth-scroll',
@@ -485,11 +511,28 @@ class Anchorhead_Admin {
 	 *
 	 * @return 		mixed 						The settings section
 	 */
+	public function section_display( $params ) {
+
+		$message = __( 'Settings related to the plugin output.', 'anchorhead' );
+
+		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/sections/display.php' );
+
+	} // section_display()
+
+	/**
+	 * Displays a settings section
+	 *
+	 * @since 		1.0.0
+	 *
+	 * @param 		array 		$params 		Array of parameters for the section
+	 *
+	 * @return 		mixed 						The settings section
+	 */
 	public function section_smooth_scroll( $params ) {
 
 		$message = __( 'Settings related to smooth scrolling feature.', 'anchorhead' );
 
-		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/sections/settingssection.php' );
+		include( plugin_dir_path( dirname( __FILE__ ) ) . 'views/sections/scroll.php' );
 
 	} // section_smooth_scroll()
 

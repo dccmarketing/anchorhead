@@ -13,7 +13,11 @@ $defaults['settings'] 		= array();
 $defaults['value'] 			= '';
 $atts 						= wp_parse_args( $atts, $defaults );
 
-?><label for="<?php echo esc_attr( $atts['id'] ); ?>"><?php echo wp_kses( $atts['label'], array( 'code' => array() ) ); ?>: </label><?php
+if ( ! empty( $atts['label'] ) ) :
+
+	?><label for="<?php echo esc_attr( $atts['id'] ); ?>"><?php echo wp_kses( $atts['label'], array( 'code' => array() ) ); ?>: </label><?php
+
+endif;
 
 wp_editor( $atts['value'], $atts['id'], $atts['settings'] );
 

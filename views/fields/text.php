@@ -16,8 +16,13 @@ $defaults['type'] 			= 'text';
 $defaults['value'] 			= '';
 $atts 						= wp_parse_args( $atts, $defaults );
 
-?><label for="<?php echo esc_attr( $atts['id'] ); ?>"><?php echo wp_kses( $atts['label'], array( 'code' => array() ) ); ?>: </label>
-<input
+if ( ! empty( $atts['label'] ) ) :
+
+	?><label for="<?php echo esc_attr( $atts['id'] ); ?>"><?php echo wp_kses( $atts['label'], array( 'code' => array() ) ); ?>: </label><?php
+
+endif;
+
+?><input
 	class="<?php echo esc_attr( $atts['class'] ); ?>"<?php
 
 	if ( ! empty( $atts['data'] ) ) {

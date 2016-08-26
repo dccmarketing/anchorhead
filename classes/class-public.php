@@ -95,11 +95,26 @@ class Anchorhead_Public {
 
 		foreach ( $this->headings[$thispageID]['h2'] as $heading ) {
 
-			$anchorlink = '<span id="' . $heading['anchortext'] . '"></span><a class="ah-top" data-scroll href="#" role="link">Back to top</a></h2>';
-			$content 	= substr_replace( $content, $anchorlink, $heading['closetag'] + $offset, 0 );
-			$offset 	= strlen( $anchorlink ) + $offset;
+			/**
+			 * @todo: Add to the threshhold as the menu gets longer...
+			 */
 
-			unset( $anchorlink );
+			if ( $this->options['top-link-threshhold'] > $heading['textbegin'] ) {
+
+				$new_content 	= ' class="inline-heading"';
+				$start 			= $heading['textbegin'] -1 + $offset;
+
+			} else {
+
+				$new_content 	= '<span id="' . $heading['anchortext'] . '"></span><a class="ah-top" data-scroll href="#" role="link">Back to top</a></h2>';
+				$start 			= $heading['closetag'] + $offset;
+
+			}
+
+			$content 	= substr_replace( $content, $new_content, $start, 0 );
+			$offset 	= strlen( $new_content ) + $offset;
+
+			unset( $new_content );
 
 		} // foreach
 
@@ -125,10 +140,19 @@ class Anchorhead_Public {
 		if ( in_array( $thispageID, $this->headings ) ) { return $content; } // exit if the page we're on isn't in the headings array
 
 		$float = get_theme_mod( 'float_picker' );
+		$title = get_theme_mod( 'toc_title' );
 
 		$return = '';
 		$return .= '<ul class="ah-menu" data-float="' . esc_attr( $float ) . '">';
-		$return .= '<h3 id="toc-title"></h3>';
+		$return .= '<h3 class="toc-title">';
+
+		if ( ! empty( $title ) ) {
+
+			$return .= esc_html( $title );
+
+		}
+
+		$return .= '</h3>';
 
 		foreach ( $this->headings[$thispageID]['h2'] as $heading ) {
 
@@ -162,7 +186,7 @@ class Anchorhead_Public {
 
 		$meta = get_post_custom( $post->ID );
 
-		if ( 0 === $meta['show-anchors'] ) { return $content; }
+		if ( array_key_exists( 'show-anchors', $meta ) && empty( $meta['show-anchors'][0] ) ) { return $content; }
 
 		$dom 	= new DOMDocument();
 		$h2arr 	= array();
@@ -227,6 +251,8 @@ class Anchorhead_Public {
 	 * @return 		mixed 		Script ouptut
 	 */
 	public function start_smooth_scroll() {
+
+		if ( ! isset( $this->options['scroll-type'] ) || ! isset( $this->options['scroll-speed'] ) ) { return; }
 
 		?><script>smoothScroll.init({
 			easing: '<?php echo esc_html( $this->options['scroll-type'] ); ?>',

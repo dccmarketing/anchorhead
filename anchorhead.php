@@ -55,7 +55,7 @@ if ( ! function_exists( 'anchorhead_autoloader' ) ) :
 		$paths[] 	= $base_path . 'classes/' . $file;
 
 		/**
-		 * plugin_name_autoloader_paths filter
+		 * anchorhead-autoloader-paths filter
 		 */
 		$paths = apply_filters( 'anchorhead-autoloader-paths', $paths );
 
