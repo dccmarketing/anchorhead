@@ -13,15 +13,17 @@
 }
 
 .ah-menu[data-float="left"] {
-	float: left;
+	float 			: left;
 	margin-bottom 	: 1em;
 	margin-right 	: 1em !important;
+	max-width 		: 33%;
 }
 
 .ah-menu[data-float="right"] {
 	float 			: right;
 	margin-bottom 	: 1em;
 	margin-left 	: 2em !important;
+	max-width 		: 33%;
 }
 
 .toc-title {

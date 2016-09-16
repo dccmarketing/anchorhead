@@ -6,9 +6,9 @@
  * @package 	Anchorhead
  * @see 		https://developer.wordpress.org/reference/functions/wp_editor/
  */
-$defaults['description'] 	= '';
+$defaults['description'] 	= esc_html__( '', 'anchorhead' );
 $defaults['id'] 			= '';
-$defaults['label'] 			= '';
+$defaults['label'] 			= esc_html__( '', 'anchorhead' );
 $defaults['settings'] 		= array();
 $defaults['value'] 			= '';
 $atts 						= wp_parse_args( $atts, $defaults );

@@ -337,6 +337,7 @@ class Anchorhead_Admin {
 		$options = array();
 
 		$options[] = array( 'top-link-threshhold', 'number', '25' );
+		$options[] = array( 'block-elements-threshhold', 'number', '500' );
 		$options[] = array( 'scroll-speed', 'number', '650' );
 		$options[] = array( 'scroll-type', 'select', 'easeInOutQuad' );
 
@@ -460,6 +461,21 @@ class Anchorhead_Admin {
 			)
 		);
 
+		add_settings_field(
+			'block-elements-threshhold',
+			apply_filters( ANCHORHEAD_SLUG . '-label-block-elements-threshhold', esc_html__( 'Block Elements Threshhold', 'anchorhead' ) ),
+			array( $this, 'field_text' ),
+			ANCHORHEAD_SLUG,
+			ANCHORHEAD_SLUG . '-display',
+			array(
+				'class' 		=> '',
+				'description' 	=> __( 'How many characters from the beginning of the content will the plugin compensate for list items ,heading, and other block elements (items that require the entire width of the content area). This helps prevent issues with top-links appearing too close to the top of the page.', 'anchorhead' ),
+				'id' 			=> 'block-elements-threshhold',
+				'type' 			=> 'number',
+				'value' 		=> '500',
+			)
+		);
+
 	} // register_fields()
 
 	/**
@@ -563,12 +579,6 @@ class Anchorhead_Admin {
 
 			$sanitizer 			= new Anchorhead_Sanitize();
 			$valid[$option[0]] 	= $sanitizer->clean( $input[$option[0]], $option[1] );
-
-			if ( $valid[$option[0]] != $input[$option[0]] ) {
-
-				add_settings_error( $option[0], $option[0] . '_error', esc_html__( $option[0] . ' error.', 'anchorhead' ), 'error' );
-
-			}
 
 			unset( $sanitizer );
 

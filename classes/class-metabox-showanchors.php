@@ -194,9 +194,18 @@ class Anchorhead_Metabox_Showanchors {
 		if ( empty( $field ) ) { return FALSE; }
 		if ( empty( $posted ) ) { return FALSE; }
 
-		$sanitizer 	= new Anchorhead_Sanitize();
-		$new_value 	= $sanitizer->clean( $posted[$field[0]], $field[1] );
-		$updated 	= update_post_meta( $post_id, $field[0], $new_value );
+		if ( ! empty( $posted[$field[0]] ) ) {
+
+			$sanitizer 	= new Anchorhead_Sanitize();
+			$new_value 	= $sanitizer->clean( $posted[$field[0]], $field[1] );
+
+		} else {
+
+			$new_value = '';
+
+		}
+
+		$updated = update_post_meta( $post_id, $field[0], $new_value );
 
 		return $updated;
 
