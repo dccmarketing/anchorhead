@@ -16,6 +16,22 @@ class Anchorhead_Customizer {
 	public function __construct() {}
 
 	/**
+	 * Registers all the WordPress hooks and filters for this class.
+	 */
+	public function hooks() {
+
+		add_action( 'customize_register', 		array( $this, 'register_controls' ) );
+		add_action( 'customize_register', 		array( $this, 'register_panels' ) );
+		add_action( 'customize_register', 		array( $this, 'register_sections' ) );
+		add_action( 'customize_register', 		array( $this, 'register_fields' ) );
+		add_action( 'wp_head', 					array( $this, 'header_output' ) );
+		add_action( 'customize_register', 		array( $this, 'load_customize_controls' ), 0 );
+		add_action( 'customize_preview_init', 	array( $this, 'enqueue_scripts' ), 0 );
+		//add_action( 'plugin_action_links_' . ANCHORHEAD_FILE, array( $this, 'link_to_customizer' ) );
+
+	} // hooks()
+
+	/**
 	 * Registers custom controls with the Customizer.
 	 *
 	 * @param 		WP_Customize_Manager 		$wp_customize 		Theme Customizer object.

@@ -5,7 +5,7 @@
  *
  * In command line, cd into the project directory and run the following two commands:
  * npm init
- * sudo npm install --save-dev gulp gulp-util gulp-load-plugins browser-sync fs path event-stream
+ * sudo npm install --save-dev gulp gulp-util gulp-load-plugins browser-sync fs path event-stream gulp-plumber
  * sudo npm install --save-dev gulp-sourcemaps gulp-autoprefixer gulp-filter gulp-merge-media-queries gulp-cssnano gulp-sass gulp-concat gulp-uglify gulp-notify gulp-imagemin gulp-rename gulp-wp-pot gulp-sort
  *
  * Implements:
@@ -87,18 +87,20 @@ var fs 				= require( 'fs' );
 var path 			= require( 'path' );
 var es 				= require( 'event-stream' );
 
+var onError = function(err) { console.log(err); }
+
 /**
  * Creates style files and put them in the root folder.
  */
 gulp.task( 'styles', function () {
 	gulp.src( watch.styles.source )
+		.pipe( plugins.plumber({ errorHandler: onError }) )
 		.pipe( plugins.sourcemaps.init() )
 		.pipe( plugins.sass( {
 			errLogToConsole: true,
 			outputStyle: 'compact',
 			precision: 10
 		} ) )
-		.on( 'error', console.error.bind( console ) )
 		.pipe( plugins.sourcemaps.write( './' ) )
 		.pipe( plugins.filter( '**/*.css' ) ) // Filtering stream to only css files
 		.pipe( plugins.autoprefixer( AUTOPREFIXER_BROWSERS ) )
@@ -132,12 +134,15 @@ gulp.task( 'scripts', function() {
 	var tasks = folders.map( function( folder ) {
 
 		return gulp.src( path.join( watch.scripts.path, folder, '/*.js' ) )
+			.pipe( plugins.plumber({ errorHandler: onError }) )
+			.pipe( plugins.sourcemaps.init() )
 			.pipe( plugins.concat( folder + '.js' ) )
 			.pipe( plugins.uglify() )
 			.pipe( plugins.rename({
 				basename: project.i18n.domain + '-' + folder,
 				suffix: '.min'
 			}) )
+			.pipe( plugins.sourcemaps.write( 'maps' ) )
 			.pipe( gulp.dest( './assets/js' ) );
 	});
 

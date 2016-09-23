@@ -7,7 +7,7 @@
  *
  * @package 	Anchorhead
  */
-class Anchorhead_Metabox_Showanchors {
+class Anchorhead_Metabox_Hideanchors {
 
 	/**
 	 * The capabilities required for saving these metaboxes.
@@ -61,10 +61,22 @@ class Anchorhead_Metabox_Showanchors {
 	 */
 	public function __construct() {
 
-		$this->nonce 		= 'nonce_anchorhead_showanchors';
-		$this->fields[] 	= array( 'show-anchors', 'checkbox', 1 );
+		$this->nonce 		= 'nonce_anchorhead_hideanchors';
+		$this->fields[] 	= array( 'hide-anchors', 'checkbox', 0 );
 
 	} // __construct()
+
+	/**
+	 * Registers all the WordPress hooks and filters for this class.
+	 */
+	public function hooks() {
+
+		add_action( 'add_meta_boxes', 			array( $this, 'add_metaboxes' ), 10, 2 );
+		add_action( 'add_meta_boxes', 			array( $this, 'set_meta' ), 10, 2 );
+		add_action( 'save_post', 				array( $this, 'validate_meta' ), 10, 2 );
+		add_action( 'edit_form_after_title', 	array( $this, 'promote_metaboxes' ), 10, 1 );
+
+	} // hooks()
 
 	/**
 	 * Registers metaboxes with WordPress
@@ -80,14 +92,14 @@ class Anchorhead_Metabox_Showanchors {
 		if ( $post_type !== $this->post_type ) { return; }
 
 		add_meta_box(
-			'showanchors',
-			apply_filters( ANCHORHEAD_SLUG . '-showanchors-title', esc_html__( 'Show Anchor Links', 'anchorhead' ) ),
+			'hideanchors',
+			apply_filters( ANCHORHEAD_SLUG . '-hideanchors-title', esc_html__( 'Hide Anchor Links', 'anchorhead' ) ),
 			array( $this, 'metabox' ),
 			$this->post_type,
 			'side',
 			'default',
 			array(
-				'file' => 'showanchors'
+				'file' => 'hideanchors'
 			)
 		);
 

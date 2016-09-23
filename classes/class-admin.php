@@ -43,6 +43,23 @@ class Anchorhead_Admin {
 	} // __construct()
 
 	/**
+	 * Registers all the WordPress hooks and filters for this class.
+	 */
+	public function hooks() {
+
+		add_action( 'admin_enqueue_scripts', 	array( $this, 'enqueue_styles' ) );
+		add_action( 'customize_preview_init', 	array( $this, 'enqueue_styles' ) );
+		add_action( 'admin_enqueue_scripts', 	array( $this, 'enqueue_scripts' ) );
+		add_action( 'admin_init', 				array( $this, 'register_fields' ) );
+		add_action( 'admin_init', 				array( $this, 'register_sections' ) );
+		add_action( 'admin_init', 				array( $this, 'register_settings' ) );
+		add_action( 'admin_menu', 				array( $this, 'add_menu' ) );
+		add_action( 'plugin_action_links_' . ANCHORHEAD_FILE, array( $this, 'link_settings' ) );
+		add_action( 'plugin_row_meta', 			array( $this, 'link_row_meta' ), 10, 2 );
+
+	} // hooks()
+
+	/**
 	 * Adds a settings page link to a menu
 	 *
 	 * @link 		https://codex.wordpress.org/classesistration_Menus
@@ -336,8 +353,8 @@ class Anchorhead_Admin {
 
 		$options = array();
 
+		$options[] = array( 'content-selector', 'text', '[role="main"]' );
 		$options[] = array( 'top-link-threshhold', 'number', '25' );
-		$options[] = array( 'block-elements-threshhold', 'number', '500' );
 		$options[] = array( 'scroll-speed', 'number', '650' );
 		$options[] = array( 'scroll-type', 'select', 'easeInOutQuad' );
 
@@ -447,6 +464,21 @@ class Anchorhead_Admin {
 		);
 
 		add_settings_field(
+			'content-selector',
+			apply_filters( ANCHORHEAD_SLUG . '-label-content-selector', esc_html__( 'Content Selector', 'anchorhead' ) ),
+			array( $this, 'field_text' ),
+			ANCHORHEAD_SLUG,
+			ANCHORHEAD_SLUG . '-display',
+			array(
+				'class' 		=> '',
+				'description' 	=> __( 'Enter the container for your content. This could be a CSS class or another attribute of the container.', 'anchorhead' ),
+				'id' 			=> 'content-selector',
+				'type' 			=> 'text',
+				'value' 		=> '[role="main"]',
+			)
+		);
+
+		add_settings_field(
 			'top-link-threshhold',
 			apply_filters( ANCHORHEAD_SLUG . '-label-top-link-threshhold', esc_html__( 'Top Link Threshhold', 'anchorhead' ) ),
 			array( $this, 'field_text' ),
@@ -454,25 +486,10 @@ class Anchorhead_Admin {
 			ANCHORHEAD_SLUG . '-display',
 			array(
 				'class' 		=> '',
-				'description' 	=> __( 'How many characters from the beginning of the content will the plugin begin adding the "back to top" links to H2 headings. No value will add the links to all H2 headings.', 'anchorhead' ),
+				'description' 	=> __( 'How far (in pixels) beyond the bottom of the menu will the plugin begin adding the "back to top" links to the headings. No value will start just below the bottom of the anchor menu.', 'anchorhead' ),
 				'id' 			=> 'top-link-threshhold',
 				'type' 			=> 'number',
 				'value' 		=> '25',
-			)
-		);
-
-		add_settings_field(
-			'block-elements-threshhold',
-			apply_filters( ANCHORHEAD_SLUG . '-label-block-elements-threshhold', esc_html__( 'Block Elements Threshhold', 'anchorhead' ) ),
-			array( $this, 'field_text' ),
-			ANCHORHEAD_SLUG,
-			ANCHORHEAD_SLUG . '-display',
-			array(
-				'class' 		=> '',
-				'description' 	=> __( 'How many characters from the beginning of the content will the plugin compensate for list items ,heading, and other block elements (items that require the entire width of the content area). This helps prevent issues with top-links appearing too close to the top of the page.', 'anchorhead' ),
-				'id' 			=> 'block-elements-threshhold',
-				'type' 			=> 'number',
-				'value' 		=> '500',
 			)
 		);
 

@@ -1,15 +1,15 @@
 <?php
 /**
- * The markup for the Showanchors metabox.
+ * The markup for the Hideanchors metabox.
  *
  * @package 		Anchorhead
  */
 
-wp_nonce_field( ANCHORHEAD_SLUG, 'nonce_anchorhead_showanchors' );
+wp_nonce_field( ANCHORHEAD_SLUG, 'nonce_anchorhead_hideanchors' );
 
-$atts['description'] 	= __( 'Show anchor links on this page.', 'anchorhead' );
-$atts['id'] 			= 'show-anchors';
-$atts['name'] 			= 'show-anchors';
+$atts['description'] 	= __( 'Hide anchor links on this page.', 'anchorhead' );
+$atts['id'] 			= 'hide-anchors';
+$atts['name'] 			= 'hide-anchors';
 $atts['value'] 			= 1;
 
 /**

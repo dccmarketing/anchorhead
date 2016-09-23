@@ -1,7 +1,9 @@
 <?php
 
 /**
- * The plugin bootstrap file
+ * The plugin bootstrap file.
+ *
+ * Sets plugin constants and loads the auto-loader class and the main plugin class.
  *
  * @link              http://slushman.com
  * @since             1.0.0
@@ -11,7 +13,7 @@
  * Plugin Name:       Anchorhead
  * Plugin URI:        http://slushman.com/anchorhead
  * Description:       Adds anchor links to the h2 heading in a page/post.
- * Version:           1.1
+ * Version:           1.2
  * Author:            Slushman
  * Author URI:        http://slushman.com
  * License:           GPL-2.0+
@@ -26,7 +28,7 @@ if ( ! defined( 'WPINC' ) ) { die; }
 /**
  * Define constants
  */
-define( 'ANCHORHEAD_VERSION', '1.1' );
+define( 'ANCHORHEAD_VERSION', '1.2' );
 define( 'ANCHORHEAD_SLUG', 'anchorhead' );
 define( 'ANCHORHEAD_FILE', plugin_basename( __FILE__ ) );
 
@@ -37,71 +39,27 @@ register_activation_hook( __FILE__, array( 'Anchorhead_Activator', 'activate' ) 
 register_deactivation_hook( __FILE__, array( 'Anchorhead_Deactivator', 'deactivate' ) );
 
 /**
- * Autoloader function
- *
- * Will search both plugin root and includes folder for class
- *
- * @param string $class_name
+ * Load Autoloader
  */
-if ( ! function_exists( 'anchorhead_autoloader' ) ) :
+require plugin_dir_path( __FILE__ ) . '/classes/class-autoloader.php';
 
-	function anchorhead_autoloader( $class_name ) {
+/**
+ * Initializes each class and adds the hooks action in each to init.
+ */
+function anchorhead_init() {
 
-		$class_name = str_replace( 'Anchorhead_', '', $class_name );
-		$lower 		= strtolower( $class_name );
-		$file      	= 'class-' . str_replace( '_', '-', $lower ) . '.php';
-		$base_path 	= plugin_dir_path( __FILE__ );
-		$paths[] 	= $base_path . $file;
-		$paths[] 	= $base_path . 'classes/' . $file;
+	$obj_admin 		= new Anchorhead_Admin();
+	$obj_customizer = new Anchorhead_Customizer();
+	$obj_i18n 		= new Anchorhead_i18n();
+	$obj_mb_anchors = new Anchorhead_Metabox_Hideanchors();
+	$obj_public 	= new Anchorhead_Public();
 
-		/**
-		 * anchorhead-autoloader-paths filter
-		 */
-		$paths = apply_filters( 'anchorhead-autoloader-paths', $paths );
+	add_action( 'init', array( $obj_admin, 'hooks' ) );
+	add_action( 'init', array( $obj_customizer, 'hooks' ) );
+	add_action( 'init', array( $obj_i18n, 'hooks' ) );
+	add_action( 'init', array( $obj_mb_anchors, 'hooks' ) );
+	add_action( 'init', array( $obj_public, 'hooks' ) );
 
-		foreach ( $paths as $path ) :
+} // anchorhead_init()
 
-			if ( is_readable( $path ) && file_exists( $path ) ) {
-
-				require_once( $path );
-				return;
-
-			}
-
-		endforeach;
-
-	} // anchorhead_autoloader()
-
-endif;
-
-spl_autoload_register( 'anchorhead_autoloader' );
-
-if ( ! function_exists( 'anchorhead_init' ) ) :
-
-	/**
-	 * Function to initialize plugin
-	 */
-	function anchorhead_init() {
-
-		anchorhead()->run();
-
-	}
-
-	add_action( 'plugins_loaded', 'anchorhead_init' );
-
-endif;
-
-if ( ! function_exists( 'anchorhead' ) ) :
-
-	/**
-	 * Function wrapper to get instance of plugin
-	 *
-	 * @return Anchorhead
-	 */
-	function anchorhead() {
-
-		return Anchorhead::get_instance();
-
-	}
-
-endif;
+add_action( 'plugins_loaded', 'anchorhead_init' );

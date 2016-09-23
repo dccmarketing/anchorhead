@@ -1,20 +1,11 @@
 <?php
 
 /**
- * Fired during plugin activation
- *
- * @link       http://slushman.com
- * @since      1.0.0
- *
- * @package    Anchorhead
- * @subpackage Anchorhead/classes
- */
-
-/**
  * Fired during plugin activation.
  *
  * This class defines all code necessary to run during the plugin's activation.
  *
+ * @link       http://slushman.com
  * @since      1.0.0
  * @package    Anchorhead
  * @subpackage Anchorhead/classes
@@ -23,9 +14,10 @@
 class Anchorhead_Activator {
 
 	/**
-	 * Short Description. (use period)
+	 * Runs on plugin activation.
 	 *
-	 * Long Description.
+	 * Gets the options list and set them in the database with the
+	 * default values specified there.
 	 *
 	 * @since    1.0.0
 	 */
