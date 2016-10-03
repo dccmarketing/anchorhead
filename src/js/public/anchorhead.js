@@ -112,19 +112,11 @@
 		var menu 	= document.querySelector( '.ah-menu' );
 		var height 	= menu.offsetHeight;
 
-		console.log( height );
-
 		var threshhold = height + parseInt( ahsets.threshhold );
-
-		console.log( threshhold );
 
 		for ( var i = 0; i < h2s.length; i++ ) {
 
 			var top = h2s[i].offsetTop;
-
-			console.log( h2s[i] );
-
-			console.log( top );
 
 			if ( top < threshhold ) {
 
@@ -211,8 +203,7 @@
 			'ϊ': 'i', 'ΰ': 'y', 'ϋ': 'y', 'ΐ': 'i',
 
 			// Turkish
-			'Ş': 'S', 'İ': 'I', 'Ç': 'C', 'Ü': 'U', 'Ö': 'O', 'Ğ': 'G',
-			'ş': 's', 'ı': 'i', 'ç': 'c', 'ü': 'u', 'ö': 'o', 'ğ': 'g',
+			'Ş': 'S', 'İ': 'I', 'Ğ': 'G', 'ş': 's', 'ı': 'i', 'ğ': 'g',
 
 			// Russian
 			'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo', 'Ж': 'Zh',
@@ -237,16 +228,14 @@
 			'ž': 'z',
 
 			// Polish
-			'Ą': 'A', 'Ć': 'C', 'Ę': 'e', 'Ł': 'L', 'Ń': 'N', 'Ó': 'o', 'Ś': 'S', 'Ź': 'Z',
+			'Ą': 'A', 'Ć': 'C', 'Ę': 'e', 'Ł': 'L', 'Ń': 'N', 'Ś': 'S', 'Ź': 'Z',
 			'Ż': 'Z',
-			'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z',
+			'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ś': 's', 'ź': 'z',
 			'ż': 'z',
 
 			// Latvian
-			'Ā': 'A', 'Č': 'C', 'Ē': 'E', 'Ģ': 'G', 'Ī': 'i', 'Ķ': 'k', 'Ļ': 'L', 'Ņ': 'N',
-			'Š': 'S', 'Ū': 'u', 'Ž': 'Z',
-			'ā': 'a', 'č': 'c', 'ē': 'e', 'ģ': 'g', 'ī': 'i', 'ķ': 'k', 'ļ': 'l', 'ņ': 'n',
-			'š': 's', 'ū': 'u', 'ž': 'z'
+			'Ā': 'A', 'Ē': 'E', 'Ģ': 'G', 'Ī': 'i', 'Ķ': 'k', 'Ļ': 'L', 'Ņ': 'N', 'Ū': 'u',
+			'ā': 'a', 'ē': 'e', 'ģ': 'g', 'ī': 'i', 'ķ': 'k', 'ļ': 'l', 'ņ': 'n', 'ū': 'u'
 		};
 
 		// Make custom replacements
